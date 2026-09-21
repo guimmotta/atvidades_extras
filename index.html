@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Extra Practice — Countries &amp; Jobs</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f2ef;
+    color: #2b2b2b;
+    padding: 0 0 40px 0;
+  }
+  header {
+    background: linear-gradient(135deg, #e2574c, #f0857a);
+    color: #fff;
+    padding: 28px 20px 22px 20px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 6px 0; font-size: 22px; }
+  header p { margin: 0; font-size: 14px; opacity: 0.95; }
+
+  .tabs {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 14px 8px;
+    min-height: 48px;
+    border: none;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    color: #888;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+  }
+  .tab-btn.active { color: #e2574c; border-bottom: 3px solid #e2574c; }
+
+  .section { display: none; padding: 18px 16px; max-width: 620px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 16px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .card h2 {
+    font-size: 16px;
+    margin: 0 0 4px 0;
+    color: #c94a3f;
+  }
+  .card .instr {
+    font-size: 13px;
+    color: #777;
+    margin: 0 0 14px 0;
+  }
+
+  /* MATCH */
+  .match-row { display: flex; gap: 10px; }
+  .match-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .chip {
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 2px solid #e0dcd6;
+    background: #faf9f7;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .chip.selected { border-color: #e2574c; background: #fdece9; }
+  .chip.correct { border-color: #4caf7d; background: #e6f7ee; color: #2f7a54; cursor: default; }
+
+  /* GAP FILL / MULTIPLE CHOICE */
+  .sentence { font-size: 15px; margin-bottom: 8px; line-height: 1.6; }
+  .blank-slot {
+    display: inline-block;
+    min-width: 54px;
+    padding: 2px 8px;
+    border-bottom: 2px solid #c94a3f;
+    font-weight: 700;
+    color: #c94a3f;
+    text-align: center;
+  }
+  .opt-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .opt-btn {
+    min-height: 44px;
+    padding: 8px 16px;
+    border-radius: 22px;
+    border: 2px solid #e0dcd6;
+    background: #faf9f7;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .opt-btn.correct { background: #e6f7ee; border-color: #4caf7d; color: #2f7a54; }
+  .opt-btn.wrong { background: #fdeaea; border-color: #e05555; color: #a53c3c; }
+  .opt-btn:disabled { opacity: 0.6; }
+
+  /* SENTENCE BUILDER */
+  .build-target {
+    min-height: 48px;
+    border: 2px dashed #d8d2c9;
+    border-radius: 10px;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    background: #faf9f7;
+  }
+  .build-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .word-chip {
+    min-height: 44px;
+    padding: 8px 14px;
+    background: #fff;
+    border: 2px solid #e0dcd6;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .word-chip.used { opacity: 0.35; pointer-events: none; }
+  .placed-chip {
+    min-height: 40px;
+    padding: 6px 12px;
+    background: #fdece9;
+    border: 2px solid #e2574c;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .check-btn, .reset-btn {
+    min-height: 44px;
+    padding: 10px 20px;
+    border-radius: 22px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 8px;
+    margin-top: 4px;
+  }
+  .check-btn { background: #e2574c; color: #fff; }
+  .reset-btn { background: #eee; color: #555; }
+  .feedback { font-size: 13px; margin-top: 8px; font-weight: 600; min-height: 18px; }
+  .feedback.ok { color: #2f7a54; }
+  .feedback.no { color: #a53c3c; }
+
+  /* TRUE FALSE */
+  .tf-item { margin-bottom: 14px; }
+  .tf-text { font-size: 14px; margin-bottom: 6px; }
+  .tf-btns { display: flex; gap: 8px; }
+  .tf-btn {
+    flex: 1;
+    min-height: 44px;
+    border-radius: 10px;
+    border: 2px solid #e0dcd6;
+    background: #faf9f7;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tf-btn.correct { background: #e6f7ee; border-color: #4caf7d; color: #2f7a54; }
+  .tf-btn.wrong { background: #fdeaea; border-color: #e05555; color: #a53c3c; }
+  .tf-btn:disabled { opacity: 0.65; }
+
+  textarea {
+    width: 100%;
+    min-height: 70px;
+    border-radius: 10px;
+    border: 2px solid #e0dcd6;
+    padding: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+  }
+  .personal-box {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed #e0dcd6;
+  }
+  .personal-box p { font-size: 13px; color: #666; margin: 0 0 8px 0; font-weight: 600; }
+
+  .flag { font-size: 20px; margin-right: 8px; }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    padding: 20px 16px 10px 16px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Extra Practice</h1>
+  <p>Countries &amp; Jobs · be: I / you / he / she / it</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" id="tabBtn1" onclick="showSection(1)">🌍 Countries</button>
+  <button class="tab-btn" id="tabBtn2" onclick="showSection(2)">💼 Jobs</button>
+</div>
+
+<!-- ======================= SECTION 1: COUNTRIES ======================= -->
+<div class="section active" id="section1">
+
+  <div class="card">
+    <h2>1. Match the flags!</h2>
+    <p class="instr">Tap a flag, then tap the matching country.</p>
+    <div class="match-row">
+      <div class="match-col" id="matchLeft1"></div>
+      <div class="match-col" id="matchRight1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. am or are?</h2>
+    <p class="instr">Complete each sentence with the correct word.</p>
+    <div id="gapfill1"></div>
+    <div class="personal-box">
+      <p>✏️ Write one true sentence about you and one about me (your teacher):</p>
+      <textarea placeholder="I am from... / You are from..."></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. Build the sentence</h2>
+    <p class="instr">Tap the words in the correct order.</p>
+    <div id="builder1"></div>
+  </div>
+
+</div>
+
+<!-- ======================= SECTION 2: JOBS ======================= -->
+<div class="section" id="section2">
+
+  <div class="card">
+    <h2>1. Match the profiles!</h2>
+    <p class="instr">Tap a description, then tap the matching job.</p>
+    <div class="match-row">
+      <div class="match-col" id="matchLeft2"></div>
+      <div class="match-col" id="matchRight2"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. is, am or are?</h2>
+    <p class="instr">Choose the correct word for each sentence.</p>
+    <div id="gapfill2"></div>
+  </div>
+
+  <div class="card">
+    <h2>3. True or False?</h2>
+    <div id="tf2"></div>
+    <div class="personal-box">
+      <p>✏️ Which job from this list would you never want to have? Why?</p>
+      <textarea placeholder="I would never want to be a... because..."></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Build the sentence</h2>
+    <p class="instr">Tap the words in the correct order.</p>
+    <div id="builder2"></div>
+  </div>
+
+</div>
+
+<footer>Feito por @teacherpalomafonseca</footer>
+
+<script>
+function showSection(n) {
+  var s1 = document.getElementById('section1');
+  var s2 = document.getElementById('section2');
+  var b1 = document.getElementById('tabBtn1');
+  var b2 = document.getElementById('tabBtn2');
+  if (n === 1) {
+    s1.className = 'section active';
+    s2.className = 'section';
+    b1.className = 'tab-btn active';
+    b2.className = 'tab-btn';
+  } else {
+    s1.className = 'section';
+    s2.className = 'section active';
+    b1.className = 'tab-btn';
+    b2.className = 'tab-btn active';
+  }
+}
+
+/* ---------------- MATCH ACTIVITY (generic) ---------------- */
+function buildMatch(leftId, rightId, pairs) {
+  var leftEl = document.getElementById(leftId);
+  var rightEl = document.getElementById(rightId);
+
+  var lefts = [];
+  var rights = [];
+  var i;
+  for (i = 0; i < pairs.length; i++) {
+    lefts.push({ text: pairs[i][0], id: i, matched: false });
+    rights.push({ text: pairs[i][1], id: i, matched: false });
+  }
+  rights.sort(function () { return Math.random() - 0.5; });
+  lefts.sort(function () { return Math.random() - 0.5; });
+
+  var selectedLeft = null;
+  var selectedRight = null;
+
+  function render() {
+    leftEl.innerHTML = '';
+    rightEl.innerHTML = '';
+    for (i = 0; i < lefts.length; i++) {
+      (function (item) {
+        var btn = document.createElement('button');
+        btn.className = 'chip' + (item.matched ? ' correct' : (selectedLeft === item ? ' selected' : ''));
+        btn.innerHTML = item.text;
+        if (!item.matched) {
+          btn.onclick = function () { selectedLeft = item; render(); tryMatch(); };
+        }
+        leftEl.appendChild(btn);
+      })(lefts[i]);
+    }
+    for (i = 0; i < rights.length; i++) {
+      (function (item) {
+        var btn = document.createElement('button');
+        btn.className = 'chip' + (item.matched ? ' correct' : (selectedRight === item ? ' selected' : ''));
+        btn.innerHTML = item.text;
+        if (!item.matched) {
+          btn.onclick = function () { selectedRight = item; render(); tryMatch(); };
+        }
+        rightEl.appendChild(btn);
+      })(rights[i]);
+    }
+  }
+
+  function tryMatch() {
+    if (selectedLeft && selectedRight) {
+      if (selectedLeft.id === selectedRight.id) {
+        selectedLeft.matched = true;
+        selectedRight.matched = true;
+      }
+      selectedLeft = null;
+      selectedRight = null;
+      setTimeout(render, 250);
+    }
+  }
+
+  render();
+}
+
+/* ---------------- GAP FILL (multiple choice) ---------------- */
+function buildGapFill(containerId, items) {
+  var container = document.getElementById(containerId);
+  container.innerHTML = '';
+  var i;
+  for (i = 0; i < items.length; i++) {
+    (function (item) {
+      var wrap = document.createElement('div');
+      var sent = document.createElement('div');
+      sent.className = 'sentence';
+      sent.innerHTML = item.pre + ' <span class="blank-slot">____</span> ' + item.post;
+      wrap.appendChild(sent);
+
+      var optRow = document.createElement('div');
+      optRow.className = 'opt-row';
+
+      var options = item.options.slice();
+      options.sort(function () { return Math.random() - 0.5; });
+
+      var answered = false;
+      var i2;
+      for (i2 = 0; i2 < options.length; i2++) {
+        (function (opt) {
+          var btn = document.createElement('button');
+          btn.className = 'opt-btn';
+          btn.textContent = opt;
+          btn.onclick = function () {
+            if (answered) return;
+            if (opt === item.answer) {
+              answered = true;
+              btn.className = 'opt-btn correct';
+              sent.innerHTML = item.pre + ' <span class="blank-slot" style="color:#2f7a54;border-color:#2f7a54;">' + opt + '</span> ' + item.post;
+              var allBtns = optRow.querySelectorAll('.opt-btn');
+              allBtns.forEach(function (b) { b.disabled = true; });
+            } else {
+              btn.className = 'opt-btn wrong';
+              btn.disabled = true;
+            }
+          };
+          optRow.appendChild(btn);
+        })(options[i2]);
+      }
+      wrap.appendChild(optRow);
+      container.appendChild(wrap);
+    })(items[i]);
+  }
+}
+
+/* ---------------- SENTENCE BUILDER ---------------- */
+function buildSentenceBuilder(containerId, sentences) {
+  var container = document.getElementById(containerId);
+  container.innerHTML = '';
+  var s;
+  for (s = 0; s < sentences.length; s++) {
+    (function (target, index) {
+      var wrap = document.createElement('div');
+      wrap.style.marginBottom = '22px';
+
+      var targetBox = document.createElement('div');
+      targetBox.className = 'build-target';
+      wrap.appendChild(targetBox);
+
+      var bank = document.createElement('div');
+      bank.className = 'build-bank';
+      wrap.appendChild(bank);
+
+      var checkBtn = document.createElement('button');
+      checkBtn.className = 'check-btn';
+      checkBtn.textContent = 'Check';
+      wrap.appendChild(checkBtn);
+
+      var resetBtn = document.createElement('button');
+      resetBtn.className = 'reset-btn';
+      resetBtn.textContent = 'Reset';
+      wrap.appendChild(resetBtn);
+
+      var fb = document.createElement('div');
+      fb.className = 'feedback';
+      wrap.appendChild(fb);
+
+      var shuffled = target.slice();
+      shuffled.sort(function () { return Math.random() - 0.5; });
+
+      var placed = [];
+
+      function renderBank() {
+        bank.innerHTML = '';
+        var w;
+        for (w = 0; w < shuffled.length; w++) {
+          (function (word, wIndex) {
+            var chip = document.createElement('button');
+            chip.className = 'word-chip' + (placed.indexOf(wIndex) !== -1 ? ' used' : '');
+            chip.textContent = word;
+            chip.onclick = function () {
+              if (placed.indexOf(wIndex) !== -1) return;
+              placed.push(wIndex);
+              renderAll();
+            };
+            bank.appendChild(chip);
+          })(shuffled[w], w);
+        }
+      }
+
+      function renderTarget() {
+        targetBox.innerHTML = '';
+        var p;
+        for (p = 0; p < placed.length; p++) {
+          (function (wIndex, pos) {
+            var chip = document.createElement('button');
+            chip.className = 'placed-chip';
+            chip.textContent = shuffled[wIndex];
+            chip.onclick = function () {
+              placed.splice(pos, 1);
+              renderAll();
+            };
+            targetBox.appendChild(chip);
+          })(placed[p], p);
+        }
+      }
+
+      function renderAll() {
+        renderBank();
+        renderTarget();
+      }
+
+      checkBtn.onclick = function () {
+        var built = placed.map(function (idx) { return shuffled[idx]; });
+        var correct = built.length === target.length;
+        if (correct) {
+          var k;
+          for (k = 0; k < target.length; k++) {
+            if (built[k] !== target[k]) { correct = false; break; }
+          }
+        }
+        if (correct) {
+          fb.className = 'feedback ok';
+          fb.textContent = '✓ Correct! ' + target.join(' ') + '.';
+        } else {
+          fb.className = 'feedback no';
+          fb.textContent = 'Not quite — try again!';
+        }
+      };
+
+      resetBtn.onclick = function () {
+        placed = [];
+        fb.textContent = '';
+        renderAll();
+      };
+
+      renderAll();
+      container.appendChild(wrap);
+    })(sentences[s], s);
+  }
+}
+
+/* ---------------- TRUE / FALSE ---------------- */
+function buildTrueFalse(containerId, items) {
+  var container = document.getElementById(containerId);
+  container.innerHTML = '';
+  var i;
+  for (i = 0; i < items.length; i++) {
+    (function (item) {
+      var wrap = document.createElement('div');
+      wrap.className = 'tf-item';
+
+      var text = document.createElement('div');
+      text.className = 'tf-text';
+      text.textContent = item.text;
+      wrap.appendChild(text);
+
+      var btns = document.createElement('div');
+      btns.className = 'tf-btns';
+
+      var trueBtn = document.createElement('button');
+      trueBtn.className = 'tf-btn';
+      trueBtn.textContent = 'True';
+      var falseBtn = document.createElement('button');
+      falseBtn.className = 'tf-btn';
+      falseBtn.textContent = 'False';
+
+      function answer(choice, btnClicked, otherBtn) {
+        var isCorrect = (choice === item.answer);
+        btnClicked.className = 'tf-btn ' + (isCorrect ? 'correct' : 'wrong');
+        otherBtn.className = 'tf-btn' + ((!isCorrect) ? ' correct' : '');
+        trueBtn.disabled = true;
+        falseBtn.disabled = true;
+      }
+
+      trueBtn.onclick = function () { answer(true, trueBtn, falseBtn); };
+      falseBtn.onclick = function () { answer(false, falseBtn, trueBtn); };
+
+      btns.appendChild(trueBtn);
+      btns.appendChild(falseBtn);
+      wrap.appendChild(btns);
+      container.appendChild(wrap);
+    })(items[i]);
+  }
+}
+
+/* ================== DATA & INIT ================== */
+window.addEventListener('load', function () {
+
+  /* SECTION 1: Countries — official vocab box from the book */
+  buildMatch('matchLeft1', 'matchRight1', [
+    ['<span class="flag">🇦🇷</span>Argentina', 'Argentina'],
+    ['<span class="flag">🇧🇷</span>Brazil', 'Brazil'],
+    ['<span class="flag">🇮🇹</span>Italy', 'Italy'],
+    ['<span class="flag">🇯🇵</span>Japan', 'Japan'],
+    ['<span class="flag">🇲🇽</span>Mexico', 'Mexico'],
+    ['<span class="flag">🇵🇱</span>Poland', 'Poland'],
+    ['<span class="flag">🇪🇸</span>Spain', 'Spain'],
+    ['<span class="flag">🇹🇭</span>Thailand', 'Thailand'],
+    ['<span class="flag">🇬🇧</span>the UK', 'the UK'],
+    ['<span class="flag">🇺🇸</span>the US', 'the US'],
+    ['<span class="flag">🇹🇷</span>Turkey', 'Turkey']
+  ]);
+
+  buildGapFill('gapfill1', [
+    { pre: 'I', post: 'from Brazil, and my friend is from Poland.', options: ['am', 'are'], answer: 'am' },
+    { pre: 'You', post: 'from the UK, right?', options: ['am', 'are'], answer: 'are' },
+    { pre: 'I', post: 'from Mexico, not Argentina.', options: ['am', 'are'], answer: 'am' },
+    { pre: 'You', post: 'from Turkey, and I am from Thailand.', options: ['am', 'are'], answer: 'are' },
+    { pre: 'I', post: 'from Japan, not Spain.', options: ['am', 'are'], answer: 'am' }
+  ]);
+
+  buildSentenceBuilder('builder1', [
+    ['I', 'am', 'from', 'Brazil.'],
+    ['You', 'are', 'from', 'the', 'US.'],
+    ['I', 'am', 'not', 'from', 'Italy.']
+  ]);
+
+  /* SECTION 2: Jobs — official vocab a-h from the book */
+  buildMatch('matchLeft2', 'matchRight2', [
+    ['He plays matches every weekend for his team.', 'football player'],
+    ['She checks patients and gives them medicine.', 'doctor'],
+    ['She teaches children at a primary school.', 'school teacher'],
+    ['He flies planes and works at the airport.', 'pilot'],
+    ['She grows crops and keeps animals.', 'farmer'],
+    ['He helps the doctor and takes care of patients.', 'nurse'],
+    ['She drives people around the city for money.', 'taxi driver'],
+    ['He works at a desk, uses a computer all day.', 'office worker']
+  ]);
+
+  buildGapFill('gapfill2', [
+    { pre: 'She', post: 'a doctor.', options: ['am', 'is', 'are'], answer: 'is' },
+    { pre: 'He', post: 'a pilot, not a taxi driver.', options: ['am', 'is', 'are'], answer: 'is' },
+    { pre: 'It', post: 'a hard job.', options: ['am', 'is', 'are'], answer: 'is' },
+    { pre: 'My mother', post: 'a nurse.', options: ['am', 'is', 'are'], answer: 'is' },
+    { pre: 'My uncle', post: 'a farmer.', options: ['am', 'is', 'are'], answer: 'is' }
+  ]);
+
+  buildTrueFalse('tf2', [
+    { text: 'A pilot works at an airport.', answer: true },
+    { text: 'A farmer works in an office.', answer: false },
+    { text: 'A nurse helps the doctor.', answer: true },
+    { text: 'A taxi driver teaches children.', answer: false }
+  ]);
+
+  buildSentenceBuilder('builder2', [
+    ['She', 'is', 'a', 'school', 'teacher.'],
+    ['He', 'is', 'a', 'taxi', 'driver.'],
+    ['My', 'sister', 'is', 'an', 'office', 'worker.']
+  ]);
+
+});
+</script>
+
+</body>
+</html>
