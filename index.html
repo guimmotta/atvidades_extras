@@ -562,7 +562,7 @@ function buildTrueFalse(containerId, items) {
 window.addEventListener('load', function () {
 
   /* SECTION 1: Countries — official vocab box from the book */
-  var flagSvgBase = 'width="30" height="21" viewBox="0 0 32 22" style="vertical-align:middle;margin-right:8px;border-radius:3px;box-shadow:0 0 0 1px #ddd;flex-shrink:0;"';
+  var flagSvgBase = 'width="40" height="28" viewBox="0 0 32 22" style="vertical-align:middle;border-radius:3px;box-shadow:0 0 0 1px #ddd;flex-shrink:0;"';
   var flags = {
     Argentina: '<svg ' + flagSvgBase + '><rect width="32" height="22" fill="#74acdf"/><rect y="7.3" width="32" height="7.4" fill="#fff"/><circle cx="16" cy="11" r="3" fill="#f6b40e"/></svg>',
     Brazil: '<svg ' + flagSvgBase + '><rect width="32" height="22" fill="#009b3a"/><polygon points="16,3 29,11 16,19 3,11" fill="#fedf00"/><circle cx="16" cy="11" r="5" fill="#002776"/></svg>',
@@ -576,18 +576,19 @@ window.addEventListener('load', function () {
     'the US': '<svg ' + flagSvgBase + '><rect width="32" height="22" fill="#B31942"/><rect y="1.7" width="32" height="1.7" fill="#fff"/><rect y="5" width="32" height="1.7" fill="#fff"/><rect y="8.3" width="32" height="1.7" fill="#fff"/><rect y="11.7" width="32" height="1.7" fill="#fff"/><rect y="15" width="32" height="1.7" fill="#fff"/><rect y="18.3" width="32" height="1.7" fill="#fff"/><rect width="13" height="11.5" fill="#0A3161"/></svg>',
     Turkey: '<svg ' + flagSvgBase + '><rect width="32" height="22" fill="#E30A17"/><circle cx="13" cy="11" r="5" fill="#fff"/><circle cx="15" cy="11" r="4" fill="#E30A17"/><polygon points="19,11 20.5,9.8 20,11.6 21.6,12 19.8,12.4 20,14.2 18.8,12.8" fill="#fff"/></svg>'
   };
+  var flagCenter = '<div style="display:flex;justify-content:center;width:100%;">';
   buildMatch('matchLeft1', 'matchRight1', [
-    [flags['Argentina'] + 'Argentina', 'Argentina'],
-    [flags['Brazil'] + 'Brazil', 'Brazil'],
-    [flags['Italy'] + 'Italy', 'Italy'],
-    [flags['Japan'] + 'Japan', 'Japan'],
-    [flags['Mexico'] + 'Mexico', 'Mexico'],
-    [flags['Poland'] + 'Poland', 'Poland'],
-    [flags['Spain'] + 'Spain', 'Spain'],
-    [flags['Thailand'] + 'Thailand', 'Thailand'],
-    [flags['the UK'] + 'the UK', 'the UK'],
-    [flags['the US'] + 'the US', 'the US'],
-    [flags['Turkey'] + 'Turkey', 'Turkey']
+    [flagCenter + flags['Argentina'] + '</div>', 'Argentina'],
+    [flagCenter + flags['Brazil'] + '</div>', 'Brazil'],
+    [flagCenter + flags['Italy'] + '</div>', 'Italy'],
+    [flagCenter + flags['Japan'] + '</div>', 'Japan'],
+    [flagCenter + flags['Mexico'] + '</div>', 'Mexico'],
+    [flagCenter + flags['Poland'] + '</div>', 'Poland'],
+    [flagCenter + flags['Spain'] + '</div>', 'Spain'],
+    [flagCenter + flags['Thailand'] + '</div>', 'Thailand'],
+    [flagCenter + flags['the UK'] + '</div>', 'the UK'],
+    [flagCenter + flags['the US'] + '</div>', 'the US'],
+    [flagCenter + flags['Turkey'] + '</div>', 'Turkey']
   ]);
 
   buildGapFill('gapfill1', [
